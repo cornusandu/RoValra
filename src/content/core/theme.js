@@ -6,6 +6,11 @@ let cachedTheme = null;
 
 export const getCurrentTheme = () => cachedTheme || 'light';
 
+export const themes = Object.freeze({
+    LIGHT: 'light',
+    DARK: 'dark'
+});
+
 export const THEME_CONFIG = {
     light: {
         content: 'rgb(247, 247, 248)',
@@ -108,8 +113,8 @@ export function dispatchThemeEvent(theme) {
     detail: { theme: theme },
   });
   window.dispatchEvent(themeEvent);
-  document.body.classList.toggle("dark-theme", theme === "dark");
-  document.body.classList.toggle("light-theme", theme === "light");
+  document.body.classList.toggle("dark-theme", theme === themes.DARK);
+  document.body.classList.toggle("light-theme", theme === themes.LIGHT);
 }
 
 
