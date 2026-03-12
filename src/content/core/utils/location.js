@@ -1,4 +1,5 @@
 import { callRobloxApi } from '../api.js';
+import { log, logLevel} from '../logging.js';
 
 const LOCATION_STORAGE_KEY = 'robloxUserLocationCache';
 const CACHE_DURATION_MS = 1000 * 60 * 60 * 24; 
@@ -53,7 +54,7 @@ export async function getUserLocation(placeId, forceRefresh = false) {
         }
     }
 
-    console.log('Location Util: Fetching fresh user location via Roblox API...');
+    log(logLevel.DEBUG, 'Location Util: Fetching fresh user location via Roblox API...');
     
     try {
         const serverListRes = await callRobloxApi({

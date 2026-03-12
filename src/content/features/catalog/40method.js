@@ -13,6 +13,8 @@ import { fetchThumbnails } from '../../core/thumbnail/thumbnails.js';
 import DOMPurify from 'dompurify';
 import { getPlaceIdFromUrl } from '../../core/idExtractor.js';
 
+import { log, logLevel } from '../../core/logging.js';
+
 
 
 const ROVALRA_PLACE_ID = '107845747621646';
@@ -879,7 +881,7 @@ createNewGameBtn.addEventListener('click', async () => {
             const newUniverseId = createResponse.universeId;
             const newPlaceId = createResponse.rootPlaceId;
 
-            console.log(`RoValra: Created Universe ${newUniverseId}, Place ${newPlaceId}`);
+            log(logLevel.INFO, `RoValra: Created Universe ${newUniverseId}, Place ${newPlaceId}`);
             
             createNewGameBtn.textContent = 'Uploading Template...';
             await publishTemplateToPlace(newPlaceId, newUniverseId);

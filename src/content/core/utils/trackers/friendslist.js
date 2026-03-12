@@ -1,5 +1,6 @@
 import { callRobloxApiJson } from "../../api";
 import { getAuthenticatedUserId } from "../../user";
+import { log, logLevel } from "../../logging";
 
 
 const FRIENDS_DATA_KEY = 'rovalra_friends_data';
@@ -106,7 +107,7 @@ export async function updateFriendsList(userId) {
         };
 
         await new Promise(resolve => chrome.storage.local.set({ [FRIENDS_DATA_KEY]: allUsersFriendsData }, resolve));
-        console.log('RoValra: Friends list and timestamp updated in local storage for user', userId);
+        log(logLevel.DEBUG, 'RoValra: Friends list and timestamp updated in local storage for user', userId);
         return fullFriendsList;
 
     } catch (error) {

@@ -1,4 +1,5 @@
 import { SETTINGS_CONFIG } from '../content/core/settings/settingConfig.js';
+import { log, logLevel} from '../content/core/logging.js';
 
 // --- Constants & State ---
 
@@ -66,9 +67,9 @@ function initializeSettings(reason) {
         if (needsUpdate) {
             chrome.storage.local.set(settingsToUpdate, () => {
                 if (chrome.runtime.lastError) {
-                    console.error('RoValra: Failed to sync settings.', chrome.runtime.lastError);
+                    log(logLevel.ERROR, 'RoValra: Failed to sync settings.', chrome.runtime.lastError);
                 } else {
-                    console.log(`RoValra: Synced/Fixed ${Object.keys(settingsToUpdate).length} settings (Trigger: ${reason}).`);
+                    log(logLevel.DEBUG, `RoValra: Synced/Fixed ${Object.keys(settingsToUpdate).length} settings (Trigger: ${reason}).`);
                 }
             });
         }

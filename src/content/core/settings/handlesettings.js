@@ -3,6 +3,7 @@ import { findSettingConfig } from './generateSettings.js';
 import { getFullRegionName, REGIONS } from '../regions.js';
 import { sanitizeString } from '../utils/sanitize.js';
 import { createAndShowPopup } from '../../features/catalog/40method.js';
+import { log, logLevel } from '../../core/logging.js';
 
 
 export const loadSettings = async () => {
@@ -159,9 +160,9 @@ export const buildSettingsKey = async () => {
         chrome.storage.local.get(allSettingKeys, (currentSettings) => {
             chrome.storage.local.set({ rovalra_settings: currentSettings }, () => {
                 if (chrome.runtime.lastError) {
-                    console.error('Failed to build settings key:', chrome.runtime.lastError);
+                    log(logLevel.ERROR, 'Failed to build settings key:', chrome.runtime.lastError);
                 } else {
-                    console.log('RoValra: Settings key initialized');
+                    log(logLevel.DEBUG, 'RoValra: Settings key initialized');
                 }
                 resolve();
             });
@@ -194,7 +195,7 @@ export const initSettings = async (settingsContent) => {
                     }
 
                     if (missingPerms) {
-                        console.log(`RoValra: Disabling '${settingName}' because required permissions are missing.`);
+                        log(logLevel.WARNING, `RoValra: Disabling '${settingName}' because required permissions are missing.`);
                         await handleSaveSettings(settingName, false);
                         settings[settingName] = false;
                     }
@@ -459,7 +460,7 @@ export async function updateAllPermissionToggles() {
                 }
 
                 if (missingPerms) {
-                    console.log(`RoValra: Disabling '${settingName}' because required permissions are missing.`);
+                    log(logLevel.WARNING, `RoValra: Disabling '${settingName}' because required permissions are missing.`);
                     await handleSaveSettings(settingName, false);
                     settings[settingName] = false;
                     
@@ -592,8 +593,8 @@ export function initializeSettingsEventListeners() {
             ];
         }
 
-        console.log("Generated Environment JSON:\n" + JSON.stringify(envConfig, null, 2));
-        alert("Environment JSON has been printed to the console (F12).");
+        log(logLevel.INFO, "Generated Environment JSON:\n" + JSON.stringify(envConfig, null, 2));
+        log(logLevel.CRITICAL, "Environment JSON has been printed to the console (F12).");
     });
 
     chrome.runtime.onMessage.addListener((request) => {
@@ -651,7 +652,7 @@ export function initializeSettingsEventListeners() {
                         
                         if (!granted) {
                             target.checked = false;
-                            console.log(`RoValra: Permission denied for ${settingName}`);
+                            log(logLevel.WARNING, `RoValra: Permission denied for ${settingName}`);
                             return; 
                         }
                     }

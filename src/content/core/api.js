@@ -3,6 +3,7 @@
 import { getCsrfToken } from './utils.js';
 import { getAuthenticatedUserId } from './user.js';
 import { getValidAccessToken } from './oauth/oauth.js';
+import { log, logLevel } from './logging.js';
 
 import { updateUserLocationIfChanged } from './utils/location.js';
 const activeRequests = new Map();
@@ -244,7 +245,7 @@ export async function callRobloxApi(options) {
                                 let storedVerification = allVerifications[authedUserId];
                                 
                                 if (storedVerification) {
-                                    console.log("RoValra API: New token received from header. Updating storage.");
+                                    log(logLevel.DEBUG, "RoValra API: New token received from header. Updating storage.");
                                     storedVerification.accessToken = newAccessToken;
                                     storedVerification.timestamp = Date.now();
 
@@ -266,7 +267,7 @@ export async function callRobloxApi(options) {
 
                 
                     if (lastResponse.status === 401 && endpoint && endpoint.includes('/v1/auth') && !skipAutoAuth && !authRetried) {
-                        console.log("RoValra API: 401 Unauthorized, attempting token refresh...");
+                        log(logLevel.ERROR, "RoValra API: 401 Unauthorized, attempting token refresh...");
                         authRetried = true;
                         const newToken = await getValidAccessToken(true);
                         if (newToken) {

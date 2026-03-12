@@ -1,9 +1,8 @@
-// TODO Remove console logs
-
 const STORAGE_KEY = "rovalra_oauth_verification";
 const TOKEN_EXPIRATION_BUFFER_MS = 5 * 60 * 1000; 
 import { callRobloxApi } from '../api.js';
 import { getAuthenticatedUserId } from '../user.js';
+import { log, logLevel } from '../logging.js';
 
 const existenceCache = new Map();
 const prefixCache = new Map();
@@ -11,18 +10,18 @@ let activeOAuthPromise = null;
 
 export async function init() {
     try {
-        console.log("RoValra: Script loaded. Syncing session...");
+        log(logLevel.DEBUG, "RoValra: Script loaded. Syncing session...");
         
 
         const token = await getValidAccessToken(true);
 
         if (token) {
-            console.log("RoValra: Session synchronized successfully.");
+            log(logLevel.INFO, "RoValra: Session synchronized successfully.");
         } else {
-            console.log("RoValra: No active session or re-auth required.");
+            log(logLevel.INFO, "RoValra: No active session or re-auth required.");
         }
     } catch (error) {
-        console.error("RoValra: Error during script initialization", error);
+        log(logLevel.ERROR, "RoValra: Error during script initialization", error);
     }
 }
 export async function getValidAccessToken(forceRefresh = false) {
@@ -167,7 +166,7 @@ async function startOAuthFlow(silent = false) {
                 }
 
                 if (age < 13) {
-                    console.log("RoValra: User is under 13. Skipping OAuth.");
+                    log(logLevel.WARNING, "RoValra: User is under 13. Skipping OAuth.");
                     return false;
                 }
             }
@@ -181,7 +180,7 @@ async function startOAuthFlow(silent = false) {
         }
 
         try {
-            console.log("RoValra: Attempting direct OAuth authorization POST request...");
+            log(logLevel.DEBUG, "RoValra: Attempting direct OAuth authorization POST request...");
 
             const response = await callRobloxApi({
                 subdomain: 'apis', 
@@ -207,11 +206,11 @@ async function startOAuthFlow(silent = false) {
                 const locationUrl = authResponse.location;
 
                 if (!locationUrl) {
-                    console.error("RoValra: OAuth authorization response did not contain a location URL.", authResponse);
+                    log(logLevel.ERROR"RoValra: OAuth authorization response did not contain a location URL.", authResponse);
                     return false;
                 }
 
-                console.log("RoValra: Got authorization code. Fetching token from callback URL...");
+                log(logLevel.INFO, "RoValra: Got authorization code. Fetching token from callback URL...");
 
                 const tokenResponse = await callRobloxApi({
                     fullUrl: locationUrl,
@@ -227,7 +226,7 @@ async function startOAuthFlow(silent = false) {
                 const tokenData = await tokenResponse.json();
 
                 if (tokenData.status === 'success' && tokenData.access_token && tokenData.user_id && tokenData.username) {
-                    console.log("RoValra: OAuth Successful!", tokenData);
+                    log(logLevel.INFO, "RoValra: OAuth Successful!", tokenData);
 
                     const expiresAt = tokenData.expires_at ? tokenData.expires_at * 1000 : null;
                     
