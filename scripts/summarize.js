@@ -3,14 +3,12 @@ import { getLlama, LlamaChatSession } from "node-llama-cpp";
 
 let diff = fs.readFileSync("diff.txt", "utf-8");
 
-// Trim the diff if too long
 const max_chars = 12000;
 if (diff.length > max_chars) {
   diff = diff.slice(0, max_chars);
 }
 
 const prompt = `
-<|system|>
 You must output only a diff-style summary.
 
 Rules:
@@ -25,7 +23,6 @@ Rules:
 - NO extra text
 - NO repetition
 - NO "diff --git"
-- NO assistant/system tokens
 - If unsure, output nothing
 
 Example:
@@ -33,10 +30,6 @@ Example:
 @@ logging @@
 + Added rate limiting
 - Removed redundant return
-
-<|user|>
-${diff}
-<|assistant|>
 `;
 
 
@@ -54,9 +47,10 @@ const session = new LlamaChatSession({
   contextSequence,
 });
 
-const response = await session.prompt(prompt, {
-  maxTokens: 150,
-  temperature: 0.2,
+const response = await session.prompt(`${diff}\n\nStart output with:\n@@`, {
+  systemPrompt: prompt,
+  maxTokens: 250,
+  temperature: 0.1,
   topP: 0.9,
 });
 
