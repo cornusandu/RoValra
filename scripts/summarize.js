@@ -55,7 +55,11 @@ const session = new LlamaChatSession({
   contextSequence,
 });
 
-const response = await session.prompt(prompt);
+const response = await session.prompt(prompt, {
+  maxTokens: 150,
+  temperature: 0.2,
+  topP: 0.9,
+});
 
 const output = [
   "```diff",
