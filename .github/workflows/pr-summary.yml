@@ -1,0 +1,59 @@
+name: PR Subsystem Summary
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install node-llama-cpp
+
+      - name: Cache model
+        uses: actions/cache@v4
+        with:
+          path: models
+          key: tinyllama-model
+
+      - name: Download model
+        run: |
+          mkdir -p models
+          if [ ! -f models/model.gguf ]; then
+            wget -O models/model.gguf https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf
+          fi
+
+      - name: Create diff
+        run: |
+          git fetch origin main
+          git diff --unified=0 origin/main...HEAD > diff.txt
+
+      - name: Run model
+        run: node scripts/summarize.js
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('pr-summary.txt', 'utf-8');
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body
+            });
