@@ -1,39 +1,13 @@
 import fs from "fs";
-import { getLlama, LlamaChatSession } from "node-llama-cpp";
+import { getLlama } from "node-llama-cpp";
 
+// Read diff
 let diff = fs.readFileSync("diff.txt", "utf-8");
 
-const max_chars = 12000;
-if (diff.length > max_chars) {
-  diff = diff.slice(0, max_chars);
-}
+// Aggressive trim (critical for stability)
+diff = diff.split("\n").slice(0, 60).join("\n");
 
-const prompt = `
-You must output only a diff-style summary.
-
-Rules:
-- Output lines only in this format:
-  @@ <subsystem> @@
-  + Added ...
-  - Removed ...
-  ! Modified ...
-- NO explanations
-- NO markdown
-- NO code blocks
-- NO extra text
-- NO repetition
-- NO "diff --git"
-- If unsure, output nothing
-
-Example:
-
-@@ logging @@
-+ Added rate limiting
-- Removed redundant return
-`;
-
-
-
+// Initialize llama
 const llama = await getLlama();
 
 const model = await llama.loadModel({
@@ -41,24 +15,45 @@ const model = await llama.loadModel({
 });
 
 const context = await model.createContext();
-const contextSequence = await context.getSequence();
+const sequence = await context.getSequence();
 
-const session = new LlamaChatSession({
-  contextSequence,
+// Strongly constrained completion prompt
+const completionPrompt = `You must output ONLY this format:
+
+@@ subsystem @@
++ Added ...
+- Removed ...
+! Modified ...
+
+Rules:
+- No explanations
+- No extra text
+- No markdown
+- No "diff --git"
+- If unsure, output nothing
+
+Diff:
+${diff}
+
+Output:
+@@`;
+
+// Run inference (raw completion, NOT chat)
+const tokens = await sequence.evaluate(completionPrompt, {
+  maxTokens: 80,
+  temperature: 0.0,
 });
 
-const response = await session.prompt(`${diff}\n\nStart output with:\n@@`, {
-  systemPrompt: prompt,
-  maxTokens: 250,
-  temperature: 0.1,
-  topP: 0.9,
-});
+// Convert tokens → string
+const text = tokens.join("").trim();
 
+// Wrap in diff block
 const output = [
   "```diff",
-  response.trim(),
+  text,
   "```"
 ].join("\n");
 
+// Save + print
 fs.writeFileSync("pr-summary.txt", output);
 console.log(output);
