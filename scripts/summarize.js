@@ -53,8 +53,11 @@ const model = await llama.loadModel({
 });
 
 const context = await model.createContext();
+const contextSequence = await context.getSequence();
 
-const session = new LlamaChatSession({ context });
+const session = new LlamaChatSession({
+  contextSequence,
+});
 
 const response = await session.prompt(prompt);
 
