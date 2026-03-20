@@ -10,38 +10,34 @@ if (diff.length > max_chars) {
 }
 
 const prompt = `
-You generate structured change summaries from git diffs.
+You must output only a diff-style summary.
 
 Rules:
-- Group by subsystem inferred from file paths
-- Use EXACT format:
-
-@@ <subsystem> @@
-+ Added ...
-- Removed ...
-! Modified ...
-
-- Max 10 words per line
-- No explanations
-- No filenames
-- No extra text
-- Only include meaningful changes
+- Output lines only in this format:
+  @@ <subsystem> @@
+  + Added ...
+  - Removed ...
+  ! Modified ...
+- NO explanations
+- NO markdown
+- NO code blocks
+- NO extra text
+- NO repetition
+- NO "diff --git"
+- NO assistant/system tokens
+- If unsure, output nothing
 
 Example:
 
-Input:
-diff --git a/src/logging/logger.ts b/src/logging/logger.ts
-+ added rate limit
-- removed return
-
-Output:
 @@ logging @@
 + Added rate limiting
 - Removed redundant return
 
-Now process:
+Now convert this diff:
 
 ${diff}
+
+Output:
 `;
 
 
