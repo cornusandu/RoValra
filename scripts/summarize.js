@@ -10,6 +10,7 @@ if (diff.length > max_chars) {
 }
 
 const prompt = `
+<|system|>
 You must output only a diff-style summary.
 
 Rules:
@@ -33,11 +34,9 @@ Example:
 + Added rate limiting
 - Removed redundant return
 
-Now convert this diff:
-
+<|user|>
 ${diff}
-
-Output:
+<|assistant|>
 `;
 
 
