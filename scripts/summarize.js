@@ -1,5 +1,5 @@
 import fs from "fs";
-import { LlamaModel, LlamaContext, LlamaChatSession } from "node-llama-cpp";
+import { getLlama, LlamaChatSession } from "node-llama-cpp";
 
 let diff = fs.readFileSync("diff.txt", "utf-8");
 
@@ -46,13 +46,15 @@ ${diff}
 
 
 
-const model = new LlamaModel({
+const llama = await getLlama();
+
+const model = await llama.loadModel({
   modelPath: "./models/model.gguf",
 });
 
-const context = new LlamaContext({ model });
-const session = new LlamaChatSession({ context });
+const context = await model.createContext();
 
+const session = new LlamaChatSession({ context });
 
 const response = await session.prompt(prompt);
 
