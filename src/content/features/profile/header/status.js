@@ -194,6 +194,8 @@ function openEditStatusOverlay(currentStatus, onSave, canUseApi, isTrusted) {
     };
 }
 
+import { isTrusted } from './status-utils.js';
+
 async function addStatusBubble(avatarContainer, userWantsApi) {
     if (avatarContainer.querySelector('.rovalra-status-bubble-wrapper')) return;
 
@@ -201,7 +203,7 @@ async function addStatusBubble(avatarContainer, userWantsApi) {
         const userId = getUserIdFromUrl();
         if (!userId) return;
 
-        const isUserTrusted = TRUSTED_USER_IDS.includes(String(userId));
+        const isUserTrusted = isTrusted(userId);
 
         const authenticatedUserId = await getAuthenticatedUserId();
         const isOwnProfile =

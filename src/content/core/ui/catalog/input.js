@@ -1,4 +1,4 @@
-import { safeHtml } from '../../packages/dompurify';
+import { safeHtml } from '../../packages/dompurify.js';
 
 export function createStyledInput({
     id,
