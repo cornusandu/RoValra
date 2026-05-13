@@ -20,6 +20,7 @@ import {
     showLoadingOverlayResult,
     hideLoadingOverlay,
 } from '../../core/ui/startModal/gamelaunchmodal.js';
+import { getRegionData } from '../../core/regions.js';
 
 const HIDE_ROBLOX_UI_CLASS = 'rovalra-hide-roblox-dialogs';
 

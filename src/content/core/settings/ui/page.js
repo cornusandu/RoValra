@@ -10,6 +10,8 @@ import {
     applyTheme,
 } from '../../../features/settings/index.js';
 import { createBadgeSettings } from '../badgeSettings.js';
+import { t } from '../../locale/i18n.js';
+import DOMPurify from '../../packages/dompurify.js';
 
 let isSettingsPage = false;
 
@@ -116,7 +118,7 @@ export async function checkRoValraPage() {
                 handleSearch({ target: { value: query } });
             } else {
                 contentContainer.innerHTML = DOMPurify.sanitize(
-                    `<div id="settings-content" style="padding: 15px; text-align: center; color: var(--rovalra-main-text-color);">${ts('settings.search.minLength')}</div>`,
+                    `<div id="settings-content" style="padding: 15px; text-align: center; color: var(--rovalra-main-text-color);">${await t('settings.search.minLength')}</div>`,
                 );
             }
         } else if (settingsConfigKey && SETTINGS_CONFIG[settingsConfigKey]) {

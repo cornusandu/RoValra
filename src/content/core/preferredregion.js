@@ -286,8 +286,10 @@ export async function performJoinAction(
                             }
                         }
 
+                        let bestName = "(undefined)";
+
                         if (improvedThisRound) {
-                            const bestName =
+                            bestName =
                                 getFullRegionName(bestServerRegionCode);
 
                             if (bestServerTier === 0) {
