@@ -34,10 +34,12 @@ async function renderTestPage(contentDiv) {
     headerContainer.appendChild(h1);
     contentDiv.appendChild(headerContainer);
 
+    const testUserId = 3169168864;
+
     const friendSection = document.createElement('div');
     friendSection.style.marginBottom = '24px';
     const friendHeading = document.createElement('h2');
-    friendHeading.textContent = 'Friend Tiles (user 847685835)';
+    friendHeading.textContent = `Friend Tiles (user ${testUserId})`;
     friendHeading.style.marginBottom = '12px';
     friendSection.appendChild(friendHeading);
     const friendList = document.createElement('div');
@@ -47,11 +49,10 @@ async function renderTestPage(contentDiv) {
     friendSection.appendChild(friendList);
     contentDiv.appendChild(friendSection);
 
-    const testUserId = 847685835;
     try {
         const friendsRes = await callRobloxApiJson({
             subdomain: 'friends',
-            endpoint: `/v1/users/${testUserId}/friends/find?userSort=2&limit=7`,
+            endpoint: `/v1/users/${testUserId}/friends/find?userSort=2&limit=13`,
         }).catch(() => null);
         const friendItems = friendsRes?.PageItems || [];
 
