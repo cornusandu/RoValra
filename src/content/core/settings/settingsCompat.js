@@ -41,4 +41,13 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     } catch {
         await chrome.storage.local.set("RoValraSettingsVersion", chrome.runtime.getManifest().version);
     }
+
+    oldv = Version(oldVersion);
+    newv = Version(chrome.runtime.getManifest().version);
+
+    if (newv.greater_than(oldv) == 2) {
+        // ...
+    } else if (newv.greater_than(oldv) == 0) {  // How
+        console.warn(`(RoValra) Downgraded version?`);
+    }
 });
